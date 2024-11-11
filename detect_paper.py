@@ -10,45 +10,47 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-sample_image = cv2.imread("paper_on_table.jpeg")
+def get_new(old):
+    new = np.ones(old.shape, np.uint8)
+    cv2.bitwise_not(new, new)
+    return new
+
+
+# - paper_on_table.jpeg
+
+sample_image = cv2.imread("z13MW.jpg")
+
+MORPH = 20
+CANNY = 84
+HOUGH = 25
+
 
 img = cv2.cvtColor(sample_image, cv2.COLOR_BGR2GRAY)
-edges = cv2.Canny(img, 50, 200, None, 3)
+cv2.GaussianBlur(img, (3, 3), 0, img)
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (MORPH, MORPH))
+dilated = cv2.dilate(img, kernel)
+
+edges = cv2.Canny(dilated, 0, CANNY, apertureSize=3)
 
 
-lines = cv2.HoughLines(edges, 1, np.pi / 180, 175)
+lines = cv2.HoughLinesP(edges, 1, 3.14 / 180, HOUGH)
+for line in lines[0]:
+    cv2.line(edges, (line[0], line[1]), (line[2], line[3]), (255, 0, 0), 2, 8)
 
-for r_theta in lines:
-    arr = np.array(r_theta[0], dtype=np.float64)
-    r, theta = arr
-    # Stores the value of cos(theta) in a
-    a = np.cos(theta)
+# finding contours
+contours, _ = cv2.findContours(
+    edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS
+)
+contours = filter(lambda cont: cv2.arcLength(cont, False) > 100, contours)
+contours = filter(lambda cont: cv2.contourArea(cont) > 10000, contours)
 
-    # Stores the value of sin(theta) in b
-    b = np.sin(theta)
+# simplify contours down to polygons
+rects = []
+for cont in contours:
+    rect = cv2.approxPolyDP(cont, 40, True).copy().reshape(-1, 2)
+    rects.append(rect)
 
-    # x0 stores the value rcos(theta)
-    x0 = a * r
-
-    # y0 stores the value rsin(theta)
-    y0 = b * r
-
-    # x1 stores the rounded off value of (rcos(theta)-1000sin(theta))
-    x1 = int(x0 + 1000 * (-b))
-
-    # y1 stores the rounded off value of (rsin(theta)+1000cos(theta))
-    y1 = int(y0 + 1000 * (a))
-
-    # x2 stores the rounded off value of (rcos(theta)+1000sin(theta))
-    x2 = int(x0 - 1000 * (-b))
-
-    # y2 stores the rounded off value of (rsin(theta)-1000cos(theta))
-    y2 = int(y0 - 1000 * (a))
-
-    # cv2.line draws a line in img from the point(x1,y1) to (x2,y2).
-    # (0,0,255) denotes the colour of the line to be
-    # drawn. In this case, it is red.
-    cv2.line(sample_image, (x1, y1), (x2, y2), (0, 0, 255), 2)
+cv2.drawContours(sample_image, rects, -1, (0, 255, 0), 1)
 
 plt.axis("off")
 plt.imshow(sample_image)
