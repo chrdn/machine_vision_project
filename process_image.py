@@ -6,25 +6,33 @@ import cv2
 - image.jpg
 - climbing-the-matterhorn-zermatt.jpg
 - jet.jpeg
-- ball_noun_001_01090.jpg
+- torii.jpg
 """
 
-sample_image = cv2.imread("soduku.jpeg")
+sample_image = cv2.imread("jet.jpeg")
 
 
 # constraints:
 # - 256, 3
 # - 126, 2
 # - 256 * 3//4 , 2
+
+fig, ((ax0, ax1), (ax_b, ax2)) = plt.subplots(2, 2)
+
 img_size = 256 * 3 // 4
 K = 3
 
 height, width, channels = sample_image.shape
 
 img = cv2.cvtColor(sample_image, cv2.COLOR_BGR2RGB)
-img = cv2.resize(img, (img_size, img_size * height // width))
 
-fig, ((ax0, ax1), (ax_b, ax2)) = plt.subplots(2, 2)
+# ax0.axis("off")
+# ax0.imshow(img)
+
+
+# img = cv2.resize(img, (img_size, img_size * height // width))
+img = cv2.GaussianBlur(img, (5, 5), 0)
+
 
 ax0.axis("off")
 
