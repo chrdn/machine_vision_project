@@ -298,12 +298,18 @@ k=4 (right); k=5 (left)
 
 Although `k=5` here seems to produce a very recognizable image, we found that it cluttered the image too much for more busy images. 
 
-k=5
+For example, here is a k=5 of the Torii gate. 
 
 <img src="intermediate_images/torii_k=5.png" width="440" /> 
 
 ### Results
 In the end, we opted for a `k=3`, which had a better average balance of clarity and clutter. 
+
+*From the top left corner, going clockwise"
+1. Raw image
+2. De-noising
+3. K-means clustering
+4. Canny Edge Detection / Final output
 
 <p float="left">
   <img src="test_pics/Figure_i.png" width="440" /> 
@@ -348,3 +354,11 @@ To render an image with filename `filename` into a line drawing without the imag
 ```Bash
 python3 process_image.py filename False
 ```
+
+# Reflection
+
+Overall, I learned a lot about manipulating Python structures, and was able to glimpse many different sorts of techniques. Furthermore, one lesson I took away was keeping the goal in sight. Although I was able to recreate a line image that could almost 1:1 copy the image's details and intricacies, ultimately I was working with a paintball gun, and not a laser cutter. Thus I decided to go with the more practical line drawing. 
+
+The canvas detector was much more work than I anticipated. I originally tried using Hough lines, but was unable to detect the rectangle. Even the current rectangle detector falls prey to common weakness such as lighting and background patterns. 
+
+With that being said, improving this canvas detector would probably be the first step to greater robustness. However, another interesting way that the project can be improved is by adding live camera footage. Currently, the program takes a still image, and I do wonder whether live camera footage would improve the experience and perhaps even help with the canvas detection. 
