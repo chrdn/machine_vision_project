@@ -105,12 +105,18 @@ def detect_paper(sample_image):
 
     return rotated
 
-    plt.axis("off")
-    plt.imshow(rotated)
-    plt.show()
-
 
 def alpha_out(mask_out):
     alpha = np.sum(mask_out, axis=-1) > 0
     alpha = np.uint8(alpha * 255)
     return np.dstack((mask_out, alpha))
+
+
+if __name__ == "__main__":
+    import sys
+
+    sample_image = cv2.imread(sys.argv[1])
+    rotated = detect_paper(sample_image)
+    plt.axis("off")
+    plt.imshow(rotated)
+    plt.show()

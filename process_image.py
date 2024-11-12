@@ -57,3 +57,25 @@ def process_image(sample_image):
     return_list = return_list + [edge]
 
     return return_list
+
+
+if __name__ == "__main__":
+    import sys
+
+    sample_image = cv2.imread(sys.argv[1])
+    final_images = process_image(sample_image)
+
+    fig, ((ax0, ax1), (ax_b, ax2)) = plt.subplots(2, 2)
+
+    for ax, img in zip([ax0, ax1, ax2, ax_b], final_images):
+        ax.axis("off")
+        ax.imshow(img)
+
+    plt.show()
+
+# import os
+
+# dirname = os.path.dirname(__file__)
+# filename = os.path.join(dirname, "detect_paper_test_image/envelope.jpg")
+# sample_image = cv2.imread(filename)
+# detect_paper(sample_image)
