@@ -195,24 +195,28 @@ I opted to use the final de-noising strategy, which involved both blurring and r
 
 **Raw images**
 
-<img src="process_image_test_image/image.jpg" alt="Raw Image" width="330"/>
-<img src="process_image_test_image/torii.jpg" alt="Raw Image" width="330"/>
+<p float="left">
+  <img src="process_image_test_image/image.jpg" alt="Raw Image" width="330"/>
+  <img src="process_image_test_image/torii.jpg" alt="Raw Image" width="330"/>
+</p>
 
 **Resize only, rendered to lines**
-
-<img src="intermediate_images/resize_only_lines.png" alt="Resize only" width="330"/>
-<img src="intermediate_images/resize_only_torii.png" alt="Resize only" width="330"/>
+<p float="left">
+  <img src="intermediate_images/resize_only_lines.png" alt="Resize only" width="330"/>
+  <img src="intermediate_images/resize_only_torii.png" alt="Resize only" width="330"/>
+</p>
 
 **Blur only, rendered to lines**
-
-<img src="intermediate_images/blur_only_lines.png" alt="Blur only" width="330"/>
-<img src="intermediate_images/blur_only_torii.png" alt="Blur only" width="330"/>
+<p float="left">
+  <img src="intermediate_images/blur_only_lines.png" alt="Blur only" width="330"/>
+  <img src="intermediate_images/blur_only_torii.png" alt="Blur only" width="330"/>
+</p>
 
 **Both blur and resize, rendered to lines**
-
-<img src="intermediate_images/blur_and_resize_lines.png" alt="Blur and Resize" width="330"/>
-<img src="intermediate_images/blur_and_resize_torii.png" alt="Blur and Resize" width="330"/>
-
+<p float="left">
+  <img src="intermediate_images/blur_and_resize_lines.png" alt="Blur and Resize" width="330"/>
+  <img src="intermediate_images/blur_and_resize_torii.png" alt="Blur and Resize" width="330"/>
+</p>
 The *resize only* lines still contained a lot of noise, especially in the water. The *blur only* contains highly really accurate line rendition of the image. In fact, for all of my test images, this result came out as arguably the most aesthetic, accurate, and elegant. However, ultimately we are working with an imprecise instrument, and as such, I settled on the line that used *both blur and resize*. This image removes most of the noise from the *resize only* while keeping the lines simple enough to be drawn by the paintball machine. 
 
 #### K-means clustering
