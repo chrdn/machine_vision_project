@@ -91,21 +91,21 @@ This draws a black filled in contour onto an otherwise white `mask`. Thus, locat
 Below are a couple of the images used to test the masking part of this project. Left images are the raw images, while the right images are the masked images. 
 
 <p float="left">
-  <img src="detect_paper_test_image/z13MW.jpg" width="220" />
-  <img src="test_pics/Figure_11.png" width="220" /> 
+  <img src="detect_paper_test_image/z13MW.jpg" width="330" />
+  <img src="test_pics/Figure_11.png" width="330" /> 
 </p>
 <p float="left">
-  <img src="detect_paper_test_image/lone_paper_slanted.png" width="220" />
-  <img src="test_pics/Figure_31.png" width="220" /> 
+  <img src="detect_paper_test_image/lone_paper_slanted.png" width="330" />
+  <img src="test_pics/Figure_31.png" width="330" /> 
 </p>
 <p float="left">
-  <img src="detect_paper_test_image/envelope.jpg" width="220" />
-  <img src="test_pics/Figure_41.png" width="220" /> 
+  <img src="detect_paper_test_image/envelope.jpg" width="330" />
+  <img src="test_pics/Figure_41.png" width="330" /> 
 </p>
 
 
 ## Rotation <a name="rotation"></a>
-> I was able to get this part working after the in-class demo
+> This part has been completed after the in-class demo
 ### Description
 
 Centering and orienting the image is an important part of the ultimate goal of painting a picture off of an image scan. 
@@ -147,31 +147,200 @@ Finally, we can apply all these transformations through `cv2.warpAffine(img, Mat
 ### Results
 Below are a couple of the images used to test the rotating part of this project. The left is the masked image and the right is the centered and rotated images. 
 <p float="left">
-  <img src="test_pics/Figure_11.png" width="220" /> 
-  <img src="test_pics/Figure_111.png" width="220" /> 
+  <img src="test_pics/Figure_11.png" width="330" /> 
+  <img src="test_pics/Figure_111.png" width="330" /> 
 </p>
 <p float="left">
-  <img src="test_pics/Figure_31.png" width="220" /> 
-  <img src="test_pics/Figure_311.png" width="220" /> 
+  <img src="test_pics/Figure_31.png" width="330" /> 
+  <img src="test_pics/Figure_311.png" width="330" /> 
 </p>
 <p float="left">
-  <img src="test_pics/Figure_41.png" width="220" /> 
-  <img src="test_pics/Figure_411.png" width="220" /> 
+  <img src="test_pics/Figure_41.png" width="330" /> 
+  <img src="test_pics/Figure_411.png" width="330" /> 
 </p>
 
 ## Picture to Line Drawing <a name="picture-to-line-drawing"></a>
 
-- changing K
-- No resizing
-- No Gaussian blur
+### Description
 
-Putting it all together: IMG_3901.jpg (FINAL_FIGURE1, 2)
+Using K-means clustering and Canny edge detection, we can segment an image by color and find the edges of these various groupings. 
 
+### Methodology
+
+We use the following pipeline to process the image: 
+- Reduce details / noise
+- Apply k-means clustering to segregate objects
+- Find object edges with Canny Edge Detection
+
+#### Reduce details / noise
+Normally, Canny edge Detection works best with grayscale images. However, K-means clustering groups images based off of color. As such, we cannot perform the grayscale reduction. Instead, we can reduce noise by using `resize` and `GaussianBlur`
+
+**Raw Image**
+
+<img src="process_image_test_image/image.jpg" alt="Raw Image" width="440"/>
+
+**Resize only**
+
+<img src="intermediate_images/resize_only.png" alt="Blur and Resize" width="440"/>
+
+**Blur only**
+
+<img src="intermediate_images/blur_only.png" alt="Blur and Resize" width="440"/>
+
+**Both blur and resize**
+
+<img src="intermediate_images/blur_and_resize.png" alt="Blur and Resize" width="440"/>
+
+I opted to use the final de-noising strategy, which involved both blurring and resizing. This gave me the results that best fit the use case, which was to paint a picture using a relatively imprecise instrument, which is a paintball gun. Although I haven't described the full methodology, I will show the results of using *resize only*, *blur only*, and *both blur and resize*. 
+
+**Raw images**
+
+<img src="process_image_test_image/image.jpg" alt="Raw Image" width="330"/>
+<img src="process_image_test_image/torii.jpg" alt="Raw Image" width="330"/>
+
+**Resize only, rendered to lines**
+
+<img src="intermediate_images/resize_only_lines.png" alt="Resize only" width="330"/>
+<img src="intermediate_images/resize_only_torii.png" alt="Resize only" width="330"/>
+
+**Blur only, rendered to lines**
+
+<img src="intermediate_images/blur_only_lines.png" alt="Blur only" width="330"/>
+<img src="intermediate_images/blur_only_torii.png" alt="Blur only" width="330"/>
+
+**Both blur and resize, rendered to lines**
+
+<img src="intermediate_images/blur_and_resize_lines.png" alt="Blur and Resize" width="330"/>
+<img src="intermediate_images/blur_and_resize_torii.png" alt="Blur and Resize" width="330"/>
+
+The *resize only* lines still contained a lot of noise, especially in the water. The *blur only* contains highly really accurate line rendition of the image. In fact, for all of my test images, this result came out as arguably the most aesthetic, accurate, and elegant. However, ultimately we are working with an imprecise instrument, and as such, I settled on the line that used *both blur and resize*. This image removes most of the noise from the *resize only* while keeping the lines simple enough to be drawn by the paintball machine. 
+
+#### K-means clustering
+
+**Description**
+
+K-means clustering is an image segmentation strategy that groups pixels into *k* clusters of comparable pixel counts using certain criteria, such as thresholding and proximity. The K-means algorithm itself is a method of vector quantization that is widely applicable to many data forms. [OpenCV's k-means doc](https://docs.opencv.org/4.x/de/d4d/tutorial_py_kmeans_understanding.html) describes the steps to this algorithm. 
+
+Suppose we have a set of data:
+
+![](https://docs.opencv.org/4.x/testdata.jpg)
+
+1. We want to cluster this into two clusters. Thus, we randomly choose two center points. 
+2. We find the distance from each point to any of the two central points, and label it as part of the cluster whose center poitn it is closer to. 
+
+![](https://docs.opencv.org/4.x/initial_labelling.jpg)
+
+3. Next, we can calculate the mean of the two clusters, and use this mean as the center point of the next cluster. 
+
+![](https://docs.opencv.org/4.x/update_centroid.jpg)
+
+4. We repeat steps 2 and 3. Eventually the central points converge to fixed points. These points should be located so that the sum of the distances between each point in the cluster and the corresponding central point is minimized. 
+
+![](https://docs.opencv.org/4.x/final_clusters.jpg)
+
+
+**Methodology**
+
+`OpenCV`'s implementation of the K-means algorithm uses the following syntax: 
+
+```Python
+compactness, labels, centers = cv2.kmeans(img, nClusters, criteria, attempts, flags)
+```
+
+`img` is the denoised image.\
+`nClusters` is one of the more easily tunable parameters that is directly correlated with how many details will show up in the final image. \
+`criteria` is a tuple of three parameters, `(type, max_iter, epsilon)` takes three flags for `type`:
+
+- `cv2.TERM_CRITERIA_EPS` -> stop the algorithm if specified accuracy, *epsilon* is reached. 
+- `cv2.TERM_CRITERIA_MAX_ITER` -> stops the algorithm after the specified number of iterations, *max_iter*. 
+- `cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER` -> stops the algorithm when any of the above conditions is met
+
+- I used the final flag with a `max_iter=10` and an `epsilon=1.0`
+
+`attempts` is the number of times the algorithm is executed with a different intial labellings (of which the run with the best compactness is returned). While `max_iter` is used to cut off the algorithm's iterations of step 2 and 3 to prevent an infinite loop, `attempts` is the number of times the algorithm is run with a different initial center points. I ended up settling on `attempts=10`\
+`flags` is how the initial center points are taken. I used `cv2.KMEANS_PP_CENTERS` as opposed to `cv2.KMEANS_RANDOM_CNETERS`
+
+**K-value visualization**
+
+k=2 (right); k=3 (left)
+<p float="left">
+  <img src="intermediate_images/k=2.png" width="330" /> 
+  <img src="intermediate_images/k=3.png" width="330" /> 
+</p>
+k=4 (right); k=5 (left)
+<p float="left">
+  <img src="intermediate_images/k=4.png" width="330" /> 
+  <img src="intermediate_images/k=5.png" width="330" /> 
+</p>
+
+We found that `K=3` provided the best balance of detail and simplicity. 
+
+#### Canny Edge Detection
+
+Finally, we put this image through Canny Edge Detection, which will mark out the borders of each segment of the image. 
+
+Referring back to the jet and k-values, we can see what results different k-values provide. 
+
+k=2 (right); k=3 (left)
+<p float="left">
+  <img src="intermediate_images/k=2l.png" width="330" /> 
+  <img src="intermediate_images/k=3l.png" width="330" /> 
+</p>
+k=4 (right); k=5 (left)
+<p float="left">
+  <img src="intermediate_images/k=4l.png" width="330" /> 
+  <img src="intermediate_images/k=5l.png" width="330" /> 
+</p>
+
+Although `k=5` here seems to produce a very recognizable image, we found that it cluttered the image too much for more busy images. 
+
+k=5
+
+<img src="intermediate_images/torii_k=5.png" width="440" /> 
+
+### Results
+In the end, we opted for a `k=3`, which had a better average balance of clarity and clutter. 
+
+<p float="left">
+  <img src="test_pics/Figure_i.png" width="440" /> 
+  <img src="test_pics/Figure_ii.png" width="440" /> 
+</p>
+
+<p float="left">
+  <img src="test_pics/Figure_iii.png" width="440" /> 
+  <img src="test_pics/Figure_iv.png" width="440" /> 
+</p>
 
 ## Putting it All Together <a name='putting-it-all-together'></a>
+> This part has been completed after the in-class demo
+
+After wrapping the main elements of this projects into their respective functions, I was able to set up `main.py` to properly pipeline the images together. 
+
+<p float="left">
+  <img src="IMG_3901.jpg" width="330" /> 
+  <img src="test_pics/FINAL_FIGURE_1.png" width="440" /> 
+</p>
+
+The program properly masks, rotates, and renders an image into a line drawing that can be sent to another program to do the drawing. 
 
 ### Running 
-Run the file on a given image under name `filename`. 
+Run `main.py` on a given image with filename `filename`. 
 ```Bash
 python3 main.py filename
+```
+
+Run `detect_paper.py` to remove the background of an image with filename `filename`
+```Bash
+python3 detect_paper.py filename
+```
+
+
+Run `process_image.py` to render an image with filename `filename` into a line drawing. 
+```Bash
+python3 process_image.py filename 
+```
+
+To render an image with filename `filename` into a line drawing without the image resizing (full accuracy), the user can run
+```Bash
+python3 process_image.py filename False
 ```

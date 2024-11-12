@@ -11,12 +11,13 @@ import detect_paper
 """
 
 
-def process_image(sample_image):
+def process_image(sample_image, resize_bool=True):
 
     # constraints:
     # - 256, 3
     # - 126, 2
     # - 256 * 3//4 , 2
+    blur_bool = True
 
     return_list = []
 
@@ -29,8 +30,10 @@ def process_image(sample_image):
 
     return_list = [detect_paper.alpha_out(img)]
 
-    img = cv2.resize(img, (img_size, img_size * height // width))
-    img = cv2.GaussianBlur(img, (5, 5), 0)
+    if resize_bool:
+        img = cv2.resize(img, (img_size, img_size * height // width))
+    if blur_bool:
+        img = cv2.GaussianBlur(img, (5, 5), 0)
 
     return_list = return_list + [detect_paper.alpha_out(img)]
 
@@ -63,13 +66,20 @@ if __name__ == "__main__":
     import sys
 
     sample_image = cv2.imread(sys.argv[1])
-    final_images = process_image(sample_image)
 
-    fig, ((ax0, ax1), (ax_b, ax2)) = plt.subplots(2, 2)
+    if len(sys.argv) > 2:
+        final_images = process_image(sample_image, sys.argv[2] == "True")
+    else:
+        final_images = process_image(sample_image)
 
-    for ax, img in zip([ax0, ax1, ax2, ax_b], final_images):
-        ax.axis("off")
-        ax.imshow(img)
+    plt.axis("off")
+    plt.imshow(final_images[3])
+
+    # fig, ((ax0, ax1), (ax_b, ax2)) = plt.subplots(2, 2)
+
+    # for ax, img in zip([ax0, ax1, ax2, ax_b], final_images):
+    #     ax.axis("off")
+    #     ax.imshow(img)
 
     plt.show()
 
