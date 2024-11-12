@@ -15,7 +15,7 @@ The Computer vision aspect of this project is **Step 2: Reduce Image to a line d
 - [Mask out all extraneous elements](#masking)
 - [Rotate remaining elemnets](#rotation)
 - [Reduce the picture to a line drawing](#picture-to-line-drawing)
-- [Putting it all together]
+- [Putting it all together](#putting-it-all-together)
 
 ## Identify the frame <a name="identify-the-frmae"></a>
 
@@ -166,3 +166,12 @@ Below are a couple of the images used to test the rotating part of this project.
 - No Gaussian blur
 
 Putting it all together: IMG_3901.jpg (FINAL_FIGURE1, 2)
+
+
+## Putting it All Together <a name='putting-it-all-together'></a>
+
+### Running 
+Run the file on a given image under name `filename`. 
+```Bash
+python3 main.py filename
+```
