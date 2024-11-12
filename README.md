@@ -305,11 +305,7 @@ For example, here is a k=5 of the Torii gate.
 ### Results
 In the end, we opted for a `k=3`, which had a better average balance of clarity and clutter. 
 
-*From the top left corner, going clockwise"
-1. Raw image
-2. De-noising
-3. K-means clustering
-4. Canny Edge Detection / Final output
+*From the top left corner, going clockwise: 1) Raw image 2) De-noising 3) K-means clustering 4) Canny Edge Detection / Final output*
 
 <p float="left">
   <img src="test_pics/Figure_i.png" width="440" /> 
