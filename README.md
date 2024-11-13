@@ -322,6 +322,8 @@ In the end, we opted for a `k=3`, which had a better average balance of clarity 
 
 After wrapping the main elements of this projects into their respective functions, I was able to set up `main.py` to properly pipeline the images together. 
 
+*left: raw image, right: line drawing rendering*
+
 <p float="left">
   <img src="IMG_3901.jpg" width="330" /> 
   <img src="test_pics/FINAL_FIGURE_1.png" width="440" /> 
